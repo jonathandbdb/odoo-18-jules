@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View for Medical Patient Study -->
+        <record id="view_medical_patient_study_form" model="ir.ui.view">
+            <field name="name">medical.patient.study.form</field>
+            <field name="model">medical.patient.study</field>
+            <field name="arch" type="xml">
+                <form string="Medical Patient Study">
+                    <header>
+                        <field name="status" widget="statusbar" statusbar_visible="draft,requested,performed,completed,reviewed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_attachments"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-paperclip">
+                                <field name="doc_count" widget="statinfo" string="Documents" help="Uploaded documents related to this study."/>
+                            </button>
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive" attrs="{'invisible':[('active','=',False)]}">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_active" type="object" string="Reactivate" class="oe_link" icon="fa-undo" attrs="{'invisible':[('active','=',True)]}"/>
+                        </div>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="patient_id"/>
+                                <field name="study_type_id"/>
+                                <field name="requesting_doctor_id" domain="[('is_doctor','=',True)]"/>
+                                <field name="performing_lab_id" placeholder="Lab or facility name"/>
+                            </group>
+                            <group>
+                                <field name="request_date"/>
+                                <field name="study_date"/>
+                                <field name="consultation_id" domain="[('patient_id','=',patient_id)]"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Report &amp; Conclusion">
+                                <group>
+                                    <field name="report_text" widget="html" placeholder="Detailed report and findings..."/>
+                                    <field name="conclusion" placeholder="Summary or conclusion of the study..."/>
+                                </group>
+                            </page>
+                            <page string="Attachments" name="attachments_page">
+                                <field name="message_ids" widget="chatter_attachments"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids" options="{'post_mode': 'comprehensive'}"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View for Medical Patient Study -->
+        <record id="view_medical_patient_study_tree" model="ir.ui.view">
+            <field name="name">medical.patient.study.tree</field>
+            <field name="model">medical.patient.study</field>
+            <field name="arch" type="xml">
+                <tree string="Medical Patient Studies" decoration-muted="active==False" decoration-info="status=='requested' or status=='performed'" decoration-success="status=='completed' or status=='reviewed'">
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="study_type_id"/>
+                    <field name="study_date"/>
+                    <field name="requesting_doctor_id" optional="hide"/>
+                    <field name="status"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="active" widget="boolean_toggle" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Search View for Medical Patient Study -->
+        <record id="view_medical_patient_study_search" model="ir.ui.view">
+            <field name="name">medical.patient.study.search</field>
+            <field name="model">medical.patient.study</field>
+            <field name="arch" type="xml">
+                <search string="Search Medical Studies">
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="study_type_id"/>
+                    <field name="requesting_doctor_id"/>
+                    <field name="performing_lab_id"/>
+                    <field name="study_date"/>
+                    <field name="status"/>
+                    <filter string="Inactive" name="inactive" domain="[('active','=',False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Patient" name="group_by_patient" context="{'group_by':'patient_id'}"/>
+                        <filter string="Study Type" name="group_by_study_type" context="{'group_by':'study_type_id'}"/>
+                        <filter string="Status" name="group_by_status" context="{'group_by':'status'}"/>
+                        <filter string="Request Month" name="group_by_request_month" context="{'group_by':'request_date:month'}"/>
+                        <filter string="Study Month" name="group_by_study_month" context="{'group_by':'study_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action for Medical Patient Studies -->
+        <record id="action_medical_patient_study" model="ir.actions.act_window">
+            <field name="name">Medical Studies</field>
+            <field name="res_model">medical.patient.study</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_medical_patient_study_search"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                  Record a new medical study for a patient.
+                </p><p>
+                  Track requests, results, and reports for various medical investigations.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu Item for Medical Studies under EHR -->
+        <menuitem id="menu_medical_patient_study_ehr"
+                  name="Medical Studies"
+                  parent="medical_ehr.menu_ehr_root"
+                  action="action_medical_patient_study"
+                  sequence="60"/>
+    </data>
+</odoo>

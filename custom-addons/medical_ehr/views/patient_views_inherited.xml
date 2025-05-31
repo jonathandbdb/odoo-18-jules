@@ -78,6 +78,17 @@
                                     </tree>
                                 </field>
                             </page>
+                            <page string="Medical Studies" name="ehr_studies">
+                                <field name="study_ids" readonly="1"> <!-- Typically managed via Study views -->
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="study_type_id"/>
+                                        <field name="study_date"/>
+                                        <field name="status"/>
+                                        <field name="requesting_doctor_id" optional="show"/>
+                                    </tree>
+                                </field>
+                            </page>
                         </notebook>
                     </page>
                 </xpath>
@@ -97,6 +108,10 @@
                     <button class="oe_stat_button" type="action" name="%(action_medical_prescription_patient)d"
                         attrs="{'invisible': [('is_patient', '=', False)]}" icon="fa-file-text-o">
                         <field string="Prescriptions" name="prescription_count" widget="statinfo"/>
+                    </button>
+                    <button class="oe_stat_button" type="action" name="%(action_medical_patient_study_specific_patient)d"
+                        attrs="{'invisible': [('is_patient', '=', False)]}" icon="fa-flask"> <!-- fa-flask or other suitable icon -->
+                        <field string="Studies" name="study_count" widget="statinfo"/>
                     </button>
                 </xpath>
             </field>
@@ -123,5 +138,14 @@
             <field name="context">{'default_patient_id': active_id}</field>
         </record>
 
+        <!-- Action to open medical studies for a specific patient (used by stat button) -->
+        <record id="action_medical_patient_study_specific_patient" model="ir.actions.act_window">
+            <field name="name">Patient Medical Studies</field>
+            <field name="res_model">medical.patient.study</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('patient_id', '=', active_id)]</field>
+            <field name="context">{'default_patient_id': active_id}</field>
+            <field name="help" type="html"><p class="o_view_nocontent_smiling_face">No medical studies found for this patient.</p></field>
+        </record>
     </data>
 </odoo>

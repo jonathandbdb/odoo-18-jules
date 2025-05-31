@@ -18,8 +18,10 @@ class PatientEHR(models.Model):
     # or Many2one from those models pointing to res.partner (patient).
     consultation_ids = fields.One2many('medical.consultation', 'patient_id', string='Consultations')
     prescription_ids = fields.One2many('medical.prescription', 'patient_id', string='Prescriptions')
+    study_ids = fields.One2many('medical.patient.study', 'patient_id', string='Medical Studies') # Added
     consultation_count = fields.Integer(compute='_compute_medical_record_counts', string="Consultations")
     prescription_count = fields.Integer(compute='_compute_medical_record_counts', string="Prescriptions")
+    study_count = fields.Integer(compute='_compute_medical_record_counts', string="Studies") # Added
 
     # Medical History (could also be separate models linked here)
     allergy_ids = fields.One2many('medical.patient.allergy', 'patient_id', string='Allergies')
@@ -29,7 +31,7 @@ class PatientEHR(models.Model):
     # Computed field to easily identify if a partner has EHR data or is "activated" in EHR
     has_ehr_data = fields.Boolean(string="Has EHR Records", compute="_compute_has_ehr_data", store=True)
 
-    @api.depends('consultation_ids', 'prescription_ids', 'allergy_ids', 'chronic_condition_ids', 'vaccination_ids', 'blood_type', 'ehr_notes')
+    @api.depends('consultation_ids', 'prescription_ids', 'allergy_ids', 'chronic_condition_ids', 'vaccination_ids', 'blood_type', 'ehr_notes', 'study_ids') # Added 'study_ids'
     def _compute_has_ehr_data(self):
         for patient in self:
             patient.has_ehr_data = bool(
@@ -39,13 +41,16 @@ class PatientEHR(models.Model):
                 patient.chronic_condition_ids or \
                 patient.vaccination_ids or \
                 patient.blood_type or \
-                patient.ehr_notes
+                patient.ehr_notes or \
+                patient.study_ids # Added this line
             )
 
+    @api.depends('consultation_ids', 'prescription_ids', 'study_ids') # Added 'study_ids'
     def _compute_medical_record_counts(self):
         for patient in self:
             patient.consultation_count = len(patient.consultation_ids)
             patient.prescription_count = len(patient.prescription_ids)
+            patient.study_count = len(patient.study_ids) # Added this line
             # Counts for allergies, conditions, etc. could be added if needed for stat buttons
 
     def action_view_ehr_summary(self):

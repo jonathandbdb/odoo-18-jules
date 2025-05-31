@@ -22,6 +22,8 @@
         'views/consultation_views.xml',
         'views/prescription_views.xml',
         'views/medical_history_views.xml',
+        'views/medical_study_type_views.xml',
+        'views/medical_patient_study_views.xml',
         'data/medical_ehr_data.xml', # e.g., allergy types, medication forms
         'reports/prescription_report_templates.xml', # For PDF prescription
         'reports/medical_reports.xml', # Report actions

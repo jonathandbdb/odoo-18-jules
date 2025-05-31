@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Form View for Medical Study Type -->
+        <record id="view_medical_study_type_form" model="ir.ui.view">
+            <field name="name">medical.study.type.form</field>
+            <field name="model">medical.study.type</field>
+            <field name="arch" type="xml">
+                <form string="Medical Study Type">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="name"/>
+                                <field name="code"/>
+                            </group>
+                            <group>
+                                <field name="active" widget="boolean_toggle"/>
+                            </group>
+                        </group>
+                        <field name="description" placeholder="Description of the study type..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <!-- Tree View for Medical Study Type -->
+        <record id="view_medical_study_type_tree" model="ir.ui.view">
+            <field name="name">medical.study.type.tree</field>
+            <field name="model">medical.study.type</field>
+            <field name="arch" type="xml">
+                <tree string="Medical Study Types">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Action for Medical Study Types -->
+        <record id="action_medical_study_type" model="ir.actions.act_window">
+            <field name="name">Study Types</field>
+            <field name="res_model">medical.study.type</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Define a new type of medical study.
+              </p><p>
+                Study types help categorize medical tests and procedures (e.g., Blood Test, X-Ray, MRI).
+              </p>
+            </field>
+        </record>
+
+        <!-- Menu Item for Study Types under EHR Configuration -->
+        <menuitem id="menu_medical_study_type_config"
+                  name="Study Types"
+                  parent="medical_ehr.menu_ehr_configuration"
+                  action="action_medical_study_type"
+                  sequence="50"/>
+    </data>
+</odoo>

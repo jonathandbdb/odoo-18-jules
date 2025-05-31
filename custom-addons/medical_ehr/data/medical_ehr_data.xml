@@ -98,5 +98,12 @@
             <field name="standard_price">1.0</field>
         </record>
 
+        <record id="seq_medical_patient_study" model="ir.sequence">
+            <field name="name">Patient Medical Study Sequence</field>
+            <field name="code">medical.patient.study</field>
+            <field name="prefix">STDY/</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
     </data>
 </odoo>
