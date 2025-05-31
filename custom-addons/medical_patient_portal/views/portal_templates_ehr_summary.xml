@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="portal_my_clinical_history_summary" name="My Clinical History Summary">
+        <t t-call="portal.portal_layout">
+            <t t-set="medical_area" t-value="True"/> <!-- For sidebar active state -->
+            <t t-set="page_name" t-value="'clinical_history'"/>
+
+            <!-- Breadcrumb specific to this page -->
+            <ol class="breadcrumb">
+                <t t-call="medical_patient_portal.portal_breadcrumb_medical_base"/>
+                <li class="breadcrumb-item active">
+                    Clinical History
+                </li>
+            </ol>
+
+            <div class="container mt-4">
+                <h3>Clinical History Summary</h3>
+
+                <div class="mt-4">
+                    <h4>Recent Consultations</h4>
+                    <t t-if="consultations">
+                        <div class="list-group">
+                            <t t-foreach="consultations" t-as="consultation">
+                                <!-- Placeholder link, actual detail page might not exist yet -->
+                                <a t-attf-href="/my/medical/consultation/#{consultation.id}" class="list-group-item list-group-item-action flex-column align-items-start">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h5 class="mb-1">
+                                            <span t-field="consultation.consultation_date" t-options='{"widget": "date"}'/>
+                                            <small class="ms-2"><span t-field="consultation.consultation_date" t-options='{"widget": "datetime", "format": "HH:mm"}'/></small>
+                                        </h5>
+                                    </div>
+                                    <p class="mb-1">
+                                        <strong>Doctor:</strong> <span t-field="consultation.doctor_id.name"/><br/>
+                                        <strong>Diagnosis/Reason:</strong>
+                                        <span t-esc="(consultation.diagnosis or (consultation.symptoms or '')[:100] or 'N/A')"/>
+                                        <t t-if="consultation.symptoms and len(consultation.symptoms) > 100">...</t>
+                                    </p>
+                                </a>
+                            </t>
+                        </div>
+                        <!-- Pager for consultations -->
+                        <div t-if="consultations_pager" class="o_portal_pager text-center mt-3">
+                            <t t-call="portal.pager">
+                                <!-- pager_url and pager_values are passed from controller for this specific pager -->
+                                <t t-set="url" t-value="consultations_pager_values.get('url', '/my/medical/history')"/>
+                                <t t-set="total" t-value="consultations_pager_values.get('total')"/>
+                                <t t-set="page" t-value="consultations_pager_values.get('page')"/>
+                                <t t-set="step" t-value="consultations_pager_values.get('step')"/>
+                                <t t-set="url_args" t-value="consultations_pager_values.get('url_args', {})"/>
+                            </t>
+                        </div>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info" role="alert">
+                            No consultations found.
+                        </div>
+                    </t>
+
+                    <h4 class="mt-4">Active Chronic Conditions</h4>
+                    <t t-if="chronic_conditions">
+                        <ul class="list-group">
+                            <t t-foreach="chronic_conditions" t-as="condition">
+                                <li class="list-group-item">
+                                    <strong><span t-field="condition.condition_id.display_name"/></strong>
+                                    <br/><small>Onset: <span t-field="condition.onset_date" t-options='{"widget": "date"}'/></small>
+                                    <t t-if="condition.notes"><br/><small>Notes: <span t-esc="condition.notes"/></small></t>
+                                </li>
+                            </t>
+                        </ul>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info" role="alert">
+                            No active chronic conditions recorded.
+                        </div>
+                    </t>
+
+                    <h4 class="mt-4">Allergies</h4>
+                    <t t-if="allergies">
+                        <ul class="list-group">
+                            <t t-foreach="allergies" t-as="allergy">
+                                <li class="list-group-item">
+                                    <strong><span t-field="allergy.allergy_type_id.name"/></strong>
+                                    (<span t-field="allergy.allergy_type_id.category"/>)
+                                    <br/><small>Reaction: <span t-field="allergy.reaction"/> - Criticality: <span t-field="allergy.criticality"/></small>
+                                    <t t-if="allergy.notes"><br/><small>Notes: <span t-esc="allergy.notes"/></small></t>
+                                </li>
+                            </t>
+                        </ul>
+                    </t>
+                    <t t-else="">
+                        <div class="alert alert-info" role="alert">
+                            No allergies recorded.
+                        </div>
+                    </t>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!-- Placeholder for "Not a Patient" Error Page -->
+    <template id="portal_not_a_patient_error_page" name="Not a Patient Error">
+      <t t-call="portal.portal_layout">
+        <div class="container">
+          <div class="alert alert-danger mt-3" role="alert">
+            <h4>Access Denied</h4>
+            <p>You are not registered as a patient in our system.
+               If you believe this is an error, please contact the medical center administration.</p>
+          </div>
+           <div class="mt-3">
+                <a href="/my/home" class="btn btn-primary"><i class="fa fa-home"/> Go to Portal Home</a>
+            </div>
+        </div>
+      </t>
+    </template>
+
+</odoo>

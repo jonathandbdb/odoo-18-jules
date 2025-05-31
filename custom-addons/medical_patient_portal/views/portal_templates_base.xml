@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Portal Home Page Extension or Customization -->
+    <!-- This template aims to modify the standard portal home page (`portal.portal_my_home`)
+         to add a section for medical information or quick links. -->
+    <template id="portal_my_home_medical_links"
+              name="Medical Portal: My Home Additions"
+              inherit_id="portal.portal_my_home">
+
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <!-- Add a new section for medical specific items -->
+            <div class="col-12 mt-4">
+                <h3>Your Medical Dashboard</h3>
+            </div>
+            <!-- Example: Link to Appointments -->
+            <t t-if="request.env['medical.appointment'].check_access_rights('read', raise_exception=False)">
+                 <div class="col-md-6">
+                    <a class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+                       href="/my/medical/appointments"
+                       title="Your Medical Appointments">
+                        <span><i class="fa fa-fw fa-calendar-check-o me-2"/>Your Appointments</span>
+                        <span class="badge rounded-pill bg-secondary" t-esc="appointment_count if 'appointment_count' in globals() else '0'"/>
+                    </a>
+                </div>
+            </t>
+            <!-- Example: Link to Prescriptions -->
+            <t t-if="request.env['medical.prescription'].check_access_rights('read', raise_exception=False)">
+                <div class="col-md-6">
+                     <a class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+                        href="/my/medical/prescriptions"
+                        title="Your Prescriptions">
+                         <span><i class="fa fa-fw fa-file-text-o me-2"/>Your Prescriptions</span>
+                         <span class="badge rounded-pill bg-secondary" t-esc="prescription_count if 'prescription_count' in globals() else '0'"/>
+                     </a>
+                 </div>
+            </t>
+             <!-- Example: Link to Medical Studies/Results -->
+            <t t-if="request.env['medical.patient.study'].check_access_rights('read', raise_exception=False)">
+                 <div class="col-md-6">
+                     <a class="list-group-item list-group-item-action d-flex align-items-center justify-content-between"
+                        href="/my/medical/studies"
+                        title="Your Medical Studies/Results">
+                         <span><i class="fa fa-fw fa-flask me-2"/>Your Lab/Study Results</span>
+                         <span class="badge rounded-pill bg-secondary" t-esc="study_count if 'study_count' in globals() else '0'"/>
+                     </a>
+                 </div>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Portal Layout Extension (Sidebar) -->
+    <!-- This template adds new navigation items to the portal sidebar (`portal.portal_layout`) -->
+    <template id="portal_layout_medical_links"
+              name="Medical Portal: Sidebar Links"
+              inherit_id="portal.portal_layout">
+
+        <!-- Add Medical section header to sidebar -->
+        <xpath expr="//ul[hasclass('o_portal_submenu')]" position="inside">
+            <li class="nav-item" t-if="page_name == 'medical_home' or medical_area">
+                <a class="nav-link disabled"><i class="fa fa-medkit"/> Medical Center</a>
+            </li>
+        </xpath>
+
+        <!-- Add link to Medical Appointments -->
+        <xpath expr="//ul[hasclass('o_portal_submenu')]/li[.//a[@href='/my/account']]" position="before">
+             <t t-if="request.env['medical.appointment'].check_access_rights('read', raise_exception=False)">
+                <li class="nav-item">
+                    <a t-attf-class="nav-link #{'active' if page_name == 'appointments' or object._name == 'medical.appointment' else ''}"
+                       href="/my/medical/appointments">
+                        <i class="fa fa-fw fa-calendar-check-o"/> Your Appointments
+                        <t t-set="appointment_count" t-value="request.env['medical.appointment'].search_count([('patient_id','=',request.env.user.partner_id.id)]) if request.env.user.partner_id.is_patient else 0"/>
+                        <span t-if="appointment_count" class="badge rounded-pill bg-secondary float-end" t-esc="appointment_count"/>
+                    </a>
+                </li>
+            </t>
+        </xpath>
+
+        <!-- Add link to Prescriptions -->
+        <xpath expr="//ul[hasclass('o_portal_submenu')]/li[.//a[@href='/my/account']]" position="before">
+             <t t-if="request.env['medical.prescription'].check_access_rights('read', raise_exception=False)">
+                <li class="nav-item">
+                    <a t-attf-class="nav-link #{'active' if page_name == 'prescriptions' or object._name == 'medical.prescription' else ''}"
+                       href="/my/medical/prescriptions">
+                        <i class="fa fa-fw fa-file-text-o"/> Your Prescriptions
+                        <t t-set="prescription_count" t-value="request.env['medical.prescription'].search_count([('patient_id','=',request.env.user.partner_id.id), ('state', 'in', ['active', 'dispensed'])]) if request.env.user.partner_id.is_patient else 0"/>
+                        <span t-if="prescription_count" class="badge rounded-pill bg-secondary float-end" t-esc="prescription_count"/>
+                    </a>
+                </li>
+            </t>
+        </xpath>
+
+        <!-- Add link to Medical Studies/Results -->
+        <xpath expr="//ul[hasclass('o_portal_submenu')]/li[.//a[@href='/my/account']]" position="before">
+             <t t-if="request.env['medical.patient.study'].check_access_rights('read', raise_exception=False)">
+                <li class="nav-item">
+                    <a t-attf-class="nav-link #{'active' if page_name == 'studies' or object._name == 'medical.patient.study' else ''}"
+                       href="/my/medical/studies">
+                        <i class="fa fa-fw fa-flask"/> Your Lab/Study Results
+                         <t t-set="study_count" t-value="request.env['medical.patient.study'].search_count([('patient_id','=',request.env.user.partner_id.id), ('status', 'in', ['completed', 'reviewed'])]) if request.env.user.partner_id.is_patient else 0"/>
+                        <span t-if="study_count" class="badge rounded-pill bg-secondary float-end" t-esc="study_count"/>
+                    </a>
+                </li>
+            </t>
+        </xpath>
+    </template>
+
+    <!-- Base Breadcrumb for Medical Portal Pages -->
+    <template id="portal_breadcrumb_medical_base" name="Medical Portal: Breadcrumb Base">
+        <li class="breadcrumb-item">
+            <a href="/my/home">My Account</a>
+        </li>
+        <!-- This can be extended by more specific breadcrumb templates -->
+    </template>
+
+</odoo>

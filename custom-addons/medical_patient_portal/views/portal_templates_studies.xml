@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template for listing medical studies in the portal -->
+    <template id="portal_my_studies_list" name="My Medical Studies">
+        <t t-call="portal.portal_layout">
+            <t t-set="medical_area" t-value="True"/>
+            <t t-set="page_name" t-value="'studies'"/>
+
+            <!-- Breadcrumb -->
+            <ol class="breadcrumb">
+                <t t-call="medical_patient_portal.portal_breadcrumb_medical_base"/>
+                <li class="breadcrumb-item active">
+                    Medical Studies
+                </li>
+            </ol>
+
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">My Medical Studies</t>
+            </t>
+
+            <t t-if="not studies">
+                <div class="alert alert-info mt-3" role="alert">
+                    You have no medical studies or lab results available for viewing.
+                </div>
+            </t>
+
+            <t t-if="studies">
+                <div class="table-responsive mt-3">
+                    <table class="table table-hover o_portal_my_doc_table">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="text-center">Study ID</th>
+                                <th class="text-center">Date</th>
+                                <th>Study Type</th>
+                                <th>Requesting Doctor</th>
+                                <th>Status</th>
+                                <th/> <!-- For detail view button -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="studies" t-as="study">
+                                <tr>
+                                    <td class="text-center"><a t-attf-href="/my/medical/study/#{study.id}?{{ keep_query() }}"><span t-field="study.name"/></a></td>
+                                    <td class="text-center">
+                                        <span t-field="study.study_date" t-options='{"widget": "datetime", "format": "yyyy-MM-dd HH:mm"}'/>
+                                    </td>
+                                    <td><span t-field="study.study_type_id.name"/></td>
+                                    <td>
+                                        <span t-if="study.requesting_doctor_id" t-field="study.requesting_doctor_id.name"/>
+                                        <span t-else="">N/A</span>
+                                    </td>
+                                    <td>
+                                        <span t-if="study.status == 'completed'" class="badge bg-success">Completed</span>
+                                        <span t-if="study.status == 'reviewed'" class="badge bg-primary">Reviewed</span>
+                                        <!-- Other statuses might not be shown based on ir.rule -->
+                                    </td>
+                                    <td class="text-end">
+                                        <a t-attf-href="/my/medical/study/#{study.id}?{{ keep_query() }}" class="btn btn-sm btn-outline-primary">
+                                            Details <i class="fa fa-chevron-right"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+            <div t-if="pager" class="o_portal_pager text-center">
+                <t t-call="portal.pager"/>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template for individual medical study detail -->
+    <template id="portal_study_detail_page" name="Medical Study Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="medical_area" t-value="True"/>
+            <t t-set="page_name" t-value="'study_detail'"/>
+
+            <!-- Breadcrumb specific to this page -->
+             <ol class="breadcrumb">
+                <t t-call="medical_patient_portal.portal_breadcrumb_medical_base"/>
+                <li class="breadcrumb-item">
+                    <a href="/my/medical/studies">My Medical Studies</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <t t-esc="study.name or 'Study Details'"/>
+                </li>
+            </ol>
+
+            <div class="container mt-4" t-if="study">
+                <h3>Study: <span t-field="study.name"/></h3>
+                <div class="row">
+                    <div class="col-lg-8">
+                        <div class="card mb-3">
+                            <div class="card-header"><h5 class="mb-0">Study Information</h5></div>
+                            <div class="card-body">
+                                <p><strong>Study Type:</strong> <span t-field="study.study_type_id.name"/></p>
+                                <p><strong>Study Date:</strong> <span t-field="study.study_date" t-options='{"widget": "datetime"}'/></p>
+                                <p><strong>Requesting Doctor:</strong> <span t-field="study.requesting_doctor_id.name"/></p>
+                                <p><strong>Performing Lab/Facility:</strong> <span t-field="study.performing_lab_id.name"/></p>
+                                <p><strong>Status:</strong>
+                                    <span t-if="study.status == 'completed'" class="badge bg-success">Completed</span>
+                                    <span t-if="study.status == 'reviewed'" class="badge bg-primary">Reviewed by Doctor</span>
+                                </p>
+                                <t t-if="study.consultation_id">
+                                    <p><strong>Linked Consultation:</strong>
+                                        <a t-attf-href="/my/medical/consultation/#{study.consultation_id.id}">
+                                            <span t-field="study.consultation_id.name"/>
+                                        </a>
+                                    </p>
+                                </t>
+                            </div>
+                        </div>
+
+                        <div class="card mb-3" t-if="study.report_text">
+                             <div class="card-header"><h5 class="mb-0">Report/Results</h5></div>
+                             <div class="card-body">
+                                 <div t-field="study.report_text" widget="html_viewer"/>
+                             </div>
+                        </div>
+                        <div class="card mb-3" t-if="study.conclusion">
+                             <div class="card-header"><h5 class="mb-0">Conclusion</h5></div>
+                             <div class="card-body">
+                                 <p><span t-field="study.conclusion" widget="text"/></p>
+                             </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="card" t-if="attachments">
+                            <div class="card-header"><h5 class="mb-0">Attachments</h5></div>
+                            <ul class="list-group list-group-flush">
+                                <t t-foreach="attachments" t-as="attachment">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <a t-attf-href="/my/medical/study/attachment/#{attachment.id}?access_token=#{attachment.access_token}" title="Download Attachment">
+                                            <i class="fa fa-download"/> <span t-field="attachment.name"/>
+                                        </a>
+                                        <small class="text-muted"><t t-esc=" مرحوم(attachment.file_size)"/> KB</small>
+                                    </li>
+                                </t>
+                            </ul>
+                        </div>
+                        <div class="alert alert-info mt-2" t-if="not attachments">
+                            No attachments found for this study.
+                        </div>
+                    </div>
+                </div>
+                 <div class="mt-3">
+                    <a href="/my/medical/studies" class="btn btn-secondary">
+                        <i class="fa fa-chevron-left"/> Back to Studies
+                    </a>
+                </div>
+            </div>
+            <div class="container mt-4" t-else="">
+                <div class="alert alert-warning" role="alert">
+                    The requested medical study could not be found or you do not have access to it.
+                </div>
+            </div>
+        </t>
+    </template>
+</odoo>
