@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Medical Equipment Type Views -->
+        <record id="view_medical_equipment_type_form" model="ir.ui.view">
+            <field name="name">medical.equipment.type.form</field>
+            <field name="model">medical.equipment.type</field>
+            <field name="arch" type="xml">
+                <form string="Medical Equipment Type">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                        </group>
+                        <field name="description" placeholder="Description of the equipment type..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_medical_equipment_type_tree" model="ir.ui.view">
+            <field name="name">medical.equipment.type.tree</field>
+            <field name="model">medical.equipment.type</field>
+            <field name="arch" type="xml">
+                <tree string="Medical Equipment Types">
+                    <field name="name"/>
+                    <field name="description" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_medical_equipment_type" model="ir.actions.act_window">
+            <field name="name">Equipment Types</field>
+            <field name="res_model">medical.equipment.type</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Medical Surgical Team Role Views -->
+        <record id="view_medical_surgical_team_role_form" model="ir.ui.view">
+            <field name="name">medical.surgical.team.role.form</field>
+            <field name="model">medical.surgical.team.role</field>
+            <field name="arch" type="xml">
+                <form string="Surgical Team Role">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <field name="description" placeholder="Description of the role..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_medical_surgical_team_role_tree" model="ir.ui.view">
+            <field name="name">medical.surgical.team.role.tree</field>
+            <field name="model">medical.surgical.team.role</field>
+            <field name="arch" type="xml">
+                <tree string="Surgical Team Roles">
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_medical_surgical_team_role" model="ir.actions.act_window">
+            <field name="name">Surgical Team Roles</field>
+            <field name="res_model">medical.surgical.team.role</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>

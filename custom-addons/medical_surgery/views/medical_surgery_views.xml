@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Medical Surgery Form View -->
+        <record id="view_medical_surgery_form" model="ir.ui.view">
+            <field name="name">medical.surgery.form</field>
+            <field name="model">medical.surgery</field>
+            <field name="arch" type="xml">
+                <form string="Surgery Record">
+                    <header>
+                        <button name="action_schedule" string="Schedule" type="object" class="oe_highlight" attrs="{'invisible': [('status', '!=', 'draft')]}"/>
+                        <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" attrs="{'invisible': [('status', '!=', 'scheduled')]}"/>
+                        <button name="action_start_surgery" string="Start Surgery" type="object" class="oe_highlight" attrs="{'invisible': [('status', '!=', 'confirmed')]}"/>
+                        <button name="action_end_surgery" string="End Surgery" type="object" class="oe_highlight" attrs="{'invisible': [('status', '!=', 'in_progress')]}"/>
+                        <button name="action_cancel_surgery" string="Cancel Surgery" type="object" attrs="{'invisible': [('status', 'in', ['completed', 'cancelled'])]}"/>
+                        <button name="action_reset_to_draft" string="Reset to Draft" type="object" attrs="{'invisible': [('status', 'not in', ['cancelled', 'scheduled'])]}"/>
+                        <field name="status" widget="statusbar" statusbar_visible="draft,scheduled,confirmed,in_progress,completed"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                             <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive" attrs="{'invisible':[('active','=',False)]}">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                            <button name="toggle_active" type="object" string="Reactivate" class="oe_link" icon="fa-undo" attrs="{'invisible':[('active','=',True)]}"/>
+                        </div>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Patient &amp; Procedure">
+                                <field name="patient_id"/>
+                                <field name="procedure_name"/>
+                                <field name="pre_operative_diagnosis_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
+                                <field name="post_operative_diagnosis_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
+                            </group>
+                            <group string="Scheduling &amp; Location">
+                                <field name="operating_room_id"/>
+                                <field name="planned_start_datetime"/>
+                                <field name="planned_end_datetime"/>
+                                <field name="actual_start_datetime" readonly="1"/>
+                                <field name="actual_end_datetime" readonly="1"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Surgical Team">
+                                <group>
+                                    <field name="primary_surgeon_id" domain="[('is_doctor','=',True)]" options="{'no_create_edit': True}"/>
+                                </group>
+                                <field name="team_member_ids">
+                                    <tree editable="bottom">
+                                        <field name="member_id" domain="['|',('is_doctor','=',True),('is_nurse','=',True)]"/>
+                                        <field name="role_id"/>
+                                        <field name="notes"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Pre-operative Information">
+                                <field name="pre_operative_notes" widget="html"/>
+                            </page>
+                            <page string="Operative &amp; Anesthesia Notes">
+                                <group string="Operative Notes">
+                                    <field name="operative_notes" nolabel="1" widget="html"/>
+                                </group>
+                                <group string="Anesthesia Notes">
+                                    <field name="anesthesia_notes" nolabel="1" widget="html"/>
+                                </group>
+                            </page>
+                            <page string="Post-operative Care">
+                                <field name="post_operative_instructions" widget="html"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_medical_surgery_tree" model="ir.ui.view">
+            <field name="name">medical.surgery.tree</field>
+            <field name="model">medical.surgery</field>
+            <field name="arch" type="xml">
+                <tree string="Surgeries" decoration-info="status in ('scheduled', 'confirmed', 'in_progress')" decoration-success="status=='completed'" decoration-muted="status=='cancelled' or active==False">
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="procedure_name"/>
+                    <field name="operating_room_id" optional="show"/>
+                    <field name="planned_start_datetime"/>
+                    <field name="primary_surgeon_id" optional="show"/>
+                    <field name="status"/>
+                    <field name="active" widget="boolean_toggle" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_medical_surgery_calendar" model="ir.ui.view">
+            <field name="name">medical.surgery.calendar</field>
+            <field name="model">medical.surgery</field>
+            <field name="arch" type="xml">
+                <calendar string="Surgery Schedule"
+                          date_start="planned_start_datetime"
+                          date_stop="planned_end_datetime"
+                          color="operating_room_id"
+                          mode="month"
+                          quick_add="False"
+                          event_limit="3">
+                    <field name="patient_id" avatar_field="image_128"/>
+                    <field name="procedure_name"/>
+                    <field name="primary_surgeon_id"/>
+                </calendar>
+            </field>
+        </record>
+
+         <record id="view_medical_surgery_search" model="ir.ui.view">
+             <field name="name">medical.surgery.search</field>
+             <field name="model">medical.surgery</field>
+             <field name="arch" type="xml">
+                 <search string="Search Surgeries">
+                     <field name="name"/>
+                     <field name="patient_id"/>
+                     <field name="procedure_name"/>
+                     <field name="operating_room_id"/>
+                     <field name="primary_surgeon_id"/>
+                     <field name="status"/>
+                     <filter string="Scheduled Today" name="scheduled_today"
+                             domain="[('planned_start_datetime', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00')),
+                                      ('planned_start_datetime', '&lt;=', context_today().strftime('%Y-%m-%d 23:59:59'))]"/>
+                     <filter string="Scheduled This Week" name="scheduled_this_week"
+                             domain="[('planned_start_datetime', '&gt;=', (context_today() - relativedelta(days=context_today().weekday())).strftime('%Y-%m-%d 00:00:00')),
+                                      ('planned_start_datetime', '&lt;=', (context_today() + relativedelta(days=6-context_today().weekday())).strftime('%Y-%m-%d 23:59:59'))]"/>
+                     <group expand="0" string="Group By">
+                        <filter string="Operating Room" name="group_by_or" context="{'group_by':'operating_room_id'}"/>
+                        <filter string="Patient" name="group_by_patient" context="{'group_by':'patient_id'}"/>
+                        <filter string="Status" name="group_by_status" context="{'group_by':'status'}"/>
+                        <filter string="Primary Surgeon" name="group_by_surgeon" context="{'group_by':'primary_surgeon_id'}"/>
+                     </group>
+                 </search>
+             </field>
+         </record>
+
+        <record id="action_medical_surgery" model="ir.actions.act_window">
+            <field name="name">Surgeries</field>
+            <field name="res_model">medical.surgery</field>
+            <field name="view_mode">tree,form,calendar</field>
+            <field name="search_view_id" ref="view_medical_surgery_search"/>
+            <field name="context">{'search_default_group_by_or':1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                  Schedule a new surgery.
+                </p>
+            </field>
+        </record>
+
+        <record id="action_medical_surgery_calendar" model="ir.actions.act_window">
+             <field name="name">OR Schedule</field>
+             <field name="res_model">medical.surgery</field>
+             <field name="view_mode">calendar,tree,form</field>
+             <field name="search_view_id" ref="view_medical_surgery_search"/>
+             <field name="context">{'default_operating_room_id': active_id, 'search_default_group_by_or':1}</field>
+             <field name="help" type="html"><p class="o_view_nocontent_smiling_face">Schedule surgeries in the calendar.</p></field>
+         </record>
+    </data>
+</odoo>

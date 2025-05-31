@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_medical_surgery_root"
+                  name="Operating Room"
+                  parent="medical_appointment.menu_medical_root"
+                  sequence="60"
+                  groups="medical_appointment.group_medical_user"/>
+
+        <menuitem id="menu_medical_surgery_all"
+                  name="All Surgeries"
+                  parent="menu_medical_surgery_root"
+                  action="action_medical_surgery"
+                  sequence="10"/>
+
+        <menuitem id="menu_medical_surgery_schedule_calendar"
+                  name="OR Schedule"
+                  parent="menu_medical_surgery_root"
+                  action="action_medical_surgery_calendar"
+                  sequence="20"/>
+
+        <menuitem id="menu_medical_operating_rooms"
+                  name="Operating Rooms"
+                  parent="menu_medical_surgery_root"
+                  action="action_medical_operating_room"
+                  sequence="30"/>
+
+        <menuitem id="menu_medical_surgery_configuration"
+                  name="Configuration"
+                  parent="menu_medical_surgery_root"
+                  sequence="100"
+                  groups="medical_appointment.group_medical_manager"/>
+
+        <menuitem id="menu_medical_equipment_type_config"
+                  name="Equipment Types"
+                  parent="menu_medical_surgery_configuration"
+                  action="action_medical_equipment_type"
+                  sequence="10"/>
+
+        <menuitem id="menu_medical_surgical_team_role_config"
+                  name="Surgical Team Roles"
+                  parent="menu_medical_surgery_configuration"
+                  action="action_medical_surgical_team_role"
+                  sequence="20"/>
+    </data>
+</odoo>

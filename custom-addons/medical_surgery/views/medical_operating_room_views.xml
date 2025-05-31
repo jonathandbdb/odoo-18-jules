@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Medical Operating Room Form View -->
+        <record id="view_medical_operating_room_form" model="ir.ui.view">
+            <field name="name">medical.operating.room.form</field>
+            <field name="model">medical.operating.room</field>
+            <field name="arch" type="xml">
+                <form string="Operating Room">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <group>
+                            <field name="name"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <field name="description" placeholder="Description of the operating room..."/>
+                        <separator string="Available Equipment"/>
+                        <field name="equipment_ids" widget="many2many_tags"/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_medical_operating_room_tree" model="ir.ui.view">
+            <field name="name">medical.operating.room.tree</field>
+            <field name="model">medical.operating.room</field>
+            <field name="arch" type="xml">
+                <tree string="Operating Rooms">
+                    <field name="name"/>
+                    <field name="description" optional="hide"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_medical_operating_room" model="ir.actions.act_window">
+            <field name="name">Operating Rooms</field>
+            <field name="res_model">medical.operating.room</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+    </data>
+</odoo>
