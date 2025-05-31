@@ -63,6 +63,11 @@ class TestEHRFlow(TransactionCase):
         cls.condition_hypertension = cls.env.ref('medical_ehr.condition_code_hypertension', raise_if_not_found=False) \
             or cls.env['medical.condition.code'].create({'name': 'Hypertension Test', 'code': 'I10Test', 'system': 'ICD-10'})
 
+        # Add another condition code for testing M2M relations
+        cls.condition_diabetes = cls.env['medical.condition.code'].create({
+            'name': 'Type 1 Diabetes Mellitus', 'code': 'E10Test', 'system': 'ICD-10'
+        })
+
         cls.vaccine_flu = cls.env.ref('medical_ehr.product_vaccine_flu', raise_if_not_found=False) \
             or cls.env['product.template'].create({
                 'name': 'Flu Vaccine Test', 'type': 'consu', 'is_vaccine': True, 'list_price': 15.0
@@ -102,18 +107,28 @@ class TestEHRFlow(TransactionCase):
 
 
     def test_01_create_consultation(self):
-        """Test creating a medical consultation."""
-        consultation = self.Consultation.with_user(self.test_user_doctor).create({ # Use alias
+        """Test creating a medical consultation with encounter diagnoses."""
+        consultation_vals = {
             'patient_id': self.patient_ehr_test.id,
             'doctor_id': self.doctor_ehr_test.id,
             'consultation_date': datetime.now(),
             'symptoms': 'Fever and cough.',
-            'diagnosis': 'Suspected flu.',
-            'treatment_plan': 'Rest and hydration. Follow up if symptoms worsen.',
-        })
+            'diagnosis': 'Suspected viral infection.', # Free text diagnosis
+            'encounter_diagnosis_ids': [
+                (4, self.condition_hypertension.id), # Link to existing hypertension
+                (4, self.condition_diabetes.id)      # Link to existing diabetes
+            ],
+            'treatment_plan': 'Rest and hydration. Monitor blood sugar.',
+        }
+        consultation = self.Consultation.with_user(self.test_user_doctor).create(consultation_vals)
+
         self.assertTrue(consultation.id, "Consultation should be created.")
         self.assertNotEqual(consultation.name, 'New', "Consultation reference should be generated.")
         self.assertEqual(consultation.patient_id, self.patient_ehr_test)
+        self.assertEqual(len(consultation.encounter_diagnosis_ids), 2, "Should have two encounter diagnoses.")
+        self.assertIn(self.condition_hypertension, consultation.encounter_diagnosis_ids)
+        self.assertIn(self.condition_diabetes, consultation.encounter_diagnosis_ids)
+
         # Invalidate cache to ensure computed fields are re-calculated
         self.patient_ehr_test.invalidate_cache(ids=[self.patient_ehr_test.id])
         self.assertEqual(self.patient_ehr_test.consultation_count, 1)

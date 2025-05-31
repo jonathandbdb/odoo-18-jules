@@ -62,11 +62,13 @@
             <field name="category_id" position="after">
               <field name="is_patient_visible" invisible="1"/>
               <field name="is_doctor_visible" invisible="1"/>
+              <field name="is_nurse_visible" invisible="1"/> <!-- Added -->
             </field>
             <xpath expr="//div[hasclass('oe_title')]" position="after">
                 <group>
                     <field name="is_patient" attrs="{'invisible': [('is_patient_visible','=',False)]}"/>
                     <field name="is_doctor" attrs="{'invisible': [('is_doctor_visible','=',False)]}"/>
+                    <field name="is_nurse" attrs="{'invisible': [('is_nurse_visible','=',False)]}"/> <!-- Added -->
                 </group>
             </xpath>
           </field>

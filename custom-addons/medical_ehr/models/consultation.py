@@ -17,6 +17,14 @@ class MedicalConsultation(models.Model):
     diagnosis = fields.Text(string='Diagnosis', tracking=True)
     symptoms = fields.Text(string='Symptoms Reported', tracking=True)
     findings = fields.Text(string='Clinical Findings', tracking=True)
+    encounter_diagnosis_ids = fields.Many2many(
+        'medical.condition.code',
+        'consultation_condition_code_rel',
+        'consultation_id', 'condition_id',
+        string='Encounter Diagnoses',
+        tracking=True,
+        help="Structured diagnosis codes for this encounter (e.g., ICD-10)."
+    )
     treatment_plan = fields.Text(string='Treatment Plan', tracking=True)
     notes = fields.Text(string='Additional Notes')
 

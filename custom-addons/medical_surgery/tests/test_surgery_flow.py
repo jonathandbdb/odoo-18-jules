@@ -19,6 +19,9 @@ class TestSurgeryFlow(TransactionCase):
         cls.Surgery = cls.env['medical.surgery']
         cls.SurgeryTeamMember = cls.env['medical.surgery.team_member']
         cls.CalendarEvent = cls.env['calendar.event']
+        cls.Consultation = cls.env['medical.consultation'] # Added
+        cls.ConditionCode = cls.env['medical.condition.code'] # Added
+
 
         # Create Specialty
         cls.general_surgery_specialty = cls.Specialty.create({'name': 'General Surgery'})
@@ -35,8 +38,9 @@ class TestSurgeryFlow(TransactionCase):
             'specialty_ids': [(6, 0, [cls.general_surgery_specialty.id])]
         })
         cls.nurse_jane = cls.Partner.create({
-            'name': 'Nurse Jane Doe', 'is_doctor': False, # Assuming an 'is_nurse' flag or similar role might be used
-            # For now, just a partner. Domain on team_member_id might need adjustment or is_nurse flag.
+            'name': 'Nurse Jane Doe',
+            'is_doctor': False,
+            'is_nurse': True # Set is_nurse to True
         })
 
         # Create Operating Room
@@ -55,11 +59,20 @@ class TestSurgeryFlow(TransactionCase):
         cls.planned_start = datetime.now() + timedelta(days=7, hours=9) # Next week 9 AM
         cls.planned_end = cls.planned_start + timedelta(hours=2) # 2 hour surgery
 
+        # Create a sample consultation for linking
+        cls.test_consultation_for_surgery = cls.Consultation.create({
+            'patient_id': cls.patient_surgery_test.id,
+            'doctor_id': cls.surgeon_dr_house.id,
+            'consultation_date': datetime.now() - timedelta(days=1),
+            'diagnosis': 'Condition requiring surgery',
+        })
+
     def test_01_create_surgery_and_calendar_event(self):
         """Test creating a surgery and verifying its linked calendar event."""
         surgery_vals = {
             'patient_id': self.patient_surgery_test.id,
             'operating_room_id': self.or_01.id,
+            'originating_consultation_id': self.test_consultation_for_surgery.id, # Link consultation
             'planned_start_datetime': self.planned_start,
             'planned_end_datetime': self.planned_end,
             'primary_surgeon_id': self.surgeon_dr_house.id,
@@ -68,16 +81,18 @@ class TestSurgeryFlow(TransactionCase):
                 (0, 0, {'member_id': self.surgeon_dr_house.id, 'role_id': self.role_surgeon.id}),
                 (0, 0, {'member_id': self.nurse_jane.id, 'role_id': self.role_nurse.id}),
             ],
-            'status': 'scheduled', # Create directly as scheduled to trigger event creation
+            'status': 'scheduled',
         }
         surgery = self.Surgery.create(surgery_vals)
         self.assertTrue(surgery.id, "Surgery should be created.")
         self.assertIn('SURG/', surgery.name, "Surgery sequence name not applied.")
+        self.assertEqual(surgery.originating_consultation_id, self.test_consultation_for_surgery,
+                         "Originating consultation should be linked.")
 
         # Check for calendar event
         self.assertTrue(surgery.calendar_event_id, "Calendar event should be created for a scheduled surgery.")
         self.assertEqual(surgery.calendar_event_id.name,
-                         f"Surgery: Appendectomy - {self.patient_surgery_test.name} (OR: {self.or_01.name})")
+                         f"Surgery: Appendectomy - {self.patient_surgery_test.name} (OR: {self.or_01.name})") # Updated f-string
         self.assertEqual(surgery.calendar_event_id.start, self.planned_start)
         self.assertEqual(surgery.calendar_event_id.stop, self.planned_end)
         self.assertIn(self.patient_surgery_test.id, surgery.calendar_event_id.partner_ids.ids)

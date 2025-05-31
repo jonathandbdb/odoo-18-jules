@@ -38,7 +38,9 @@
                                 <group>
                                     <field name="symptoms" placeholder="Patient reported symptoms..."/>
                                     <field name="findings" placeholder="Doctor's clinical findings..."/>
-                                    <field name="diagnosis" placeholder="Diagnosis or provisional diagnosis..."/>
+                                    <field name="diagnosis" placeholder="Free-text diagnosis or provisional diagnosis summary..."/>
+                                    <field name="encounter_diagnosis_ids" widget="many2many_tags" options="{'no_create_edit': False}"
+                                           placeholder="Add structured diagnosis codes..."/>
                                     <field name="treatment_plan" placeholder="Proposed treatment plan..."/>
                                 </group>
                             </page>

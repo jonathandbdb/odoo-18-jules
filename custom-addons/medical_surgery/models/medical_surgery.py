@@ -10,6 +10,13 @@ class MedicalSurgery(models.Model):
     name = fields.Char(string='Surgery Reference', required=True, copy=False, readonly=True, index=True, default=lambda self: _('New'))
     patient_id = fields.Many2one('res.partner', string='Patient', required=True, domain="[('is_patient', '=', True)]", tracking=True)
     operating_room_id = fields.Many2one('medical.operating.room', string='Operating Room', tracking=True)
+    originating_consultation_id = fields.Many2one(
+        'medical.consultation',
+        string='Originating Consultation',
+        ondelete='set null',
+        tracking=True,
+        help="Consultation that recommended or led to this surgery."
+    )
 
     planned_start_datetime = fields.Datetime(string='Planned Start', required=True, tracking=True)
     planned_end_datetime = fields.Datetime(string='Planned End', required=True, tracking=True)

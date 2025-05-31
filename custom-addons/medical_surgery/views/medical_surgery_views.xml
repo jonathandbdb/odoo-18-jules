@@ -30,6 +30,11 @@
                             <group string="Patient &amp; Procedure">
                                 <field name="patient_id"/>
                                 <field name="procedure_name"/>
+                                <field name="originating_consultation_id"
+                                       options="{'no_create_edit': True}"
+                                       domain="[('patient_id', '=', patient_id)]"
+                                       attrs="{'readonly': [('patient_id', '=', False)]}"
+                                       context="{'default_patient_id': patient_id}"/>
                                 <field name="pre_operative_diagnosis_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
                                 <field name="post_operative_diagnosis_ids" widget="many2many_tags" options="{'no_create_edit': True}"/>
                             </group>
