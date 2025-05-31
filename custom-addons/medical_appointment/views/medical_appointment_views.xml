@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Medical Specialty Views -->
+        <record id="view_medical_specialty_form" model="ir.ui.view">
+            <field name="name">medical.specialty.form</field>
+            <field name="model">medical.specialty</field>
+            <field name="arch" type="xml">
+                <form string="Medical Specialty">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_medical_specialty_tree" model="ir.ui.view">
+            <field name="name">medical.specialty.tree</field>
+            <field name="model">medical.specialty</field>
+            <field name="arch" type="xml">
+                <tree string="Medical Specialties">
+                    <field name="name"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_medical_specialty" model="ir.actions.act_window">
+            <field name="name">Medical Specialties</field>
+            <field name="res_model">medical.specialty</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <!-- Medical Patient (res.partner extension) Views -->
+        <!-- Form view to add medical specific fields to res.partner if any in future -->
+        <record id="view_medical_patient_form_inherited" model="ir.ui.view">
+            <field name="name">medical.patient.form.inherited</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Medical Info (Patient)">
+                        <group>
+                            <!-- Example: <field name="patient_medical_history"/> -->
+                            <label for="is_patient" string="Is a Patient?"/>
+                            <field name="is_patient" nolabel="1" invisible="1"/> <!-- Helper field -->
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add a field to res.partner to identify them as a patient -->
+        <record id="res_partner_add_is_patient" model="ir.ui.view">
+          <field name="name">res.partner.form.is_patient</field>
+          <field name="model">res.partner</field>
+          <field name="inherit_id" ref="base.view_partner_form"/>
+          <field name="arch" type="xml">
+            <field name="category_id" position="after">
+              <field name="is_patient_visible" invisible="1"/>
+              <field name="is_doctor_visible" invisible="1"/>
+            </field>
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <group>
+                    <field name="is_patient" attrs="{'invisible': [('is_patient_visible','=',False)]}"/>
+                    <field name="is_doctor" attrs="{'invisible': [('is_doctor_visible','=',False)]}"/>
+                </group>
+            </xpath>
+          </field>
+        </record>
+
+        <!-- Action to open Patients (filtered res.partner) -->
+        <record id="action_medical_patient" model="ir.actions.act_window">
+            <field name="name">Patients</field>
+            <field name="res_model">res.partner</field>
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="context">{'default_is_patient': True, 'search_default_is_patient':1, 'default_is_company': False}</field>
+            <field name="domain">[('is_patient', '=', True)]</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new patient.
+              </p>
+            </field>
+        </record>
+
+        <!-- Medical Doctor (res.partner extension) Views -->
+        <record id="view_medical_doctor_form_inherited" model="ir.ui.view">
+            <field name="name">medical.doctor.form.inherited</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="Medical Info (Doctor)">
+                        <group>
+                           <field name="specialty_ids" widget="many2many_tags"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Action to open Doctors (filtered res.partner) -->
+        <record id="action_medical_doctor" model="ir.actions.act_window">
+            <field name="name">Doctors</field>
+            <field name="res_model">res.partner</field> <!-- Changed to res.partner -->
+            <field name="view_mode">tree,form,kanban</field>
+            <field name="context">{'default_is_doctor': True, 'search_default_is_doctor':1, 'default_is_company': False}</field>
+            <field name="domain">[('is_doctor', '=', True)]</field>
+             <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new doctor.
+              </p>
+            </field>
+        </record>
+
+        <!-- Medical Appointment Views -->
+        <record id="view_medical_appointment_form" model="ir.ui.view">
+            <field name="name">medical.appointment.form</field>
+            <field name="model">medical.appointment</field>
+            <field name="arch" type="xml">
+                <form string="Medical Appointment">
+                    <header>
+                        <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'draft')]}"/>
+                        <button name="action_done" string="Mark as Done" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'confirmed')]}"/>
+                        <button name="action_cancel" string="Cancel" type="object" attrs="{'invisible': [('state', 'in', ['done', 'cancelled'])]}"/>
+                        <button name="action_draft" string="Set to Draft" type="object" attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,done"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="patient_id" domain="[('is_patient', '=', True)]" context="{'default_is_patient':True, 'default_is_company':False}"/>
+                                <field name="doctor_id" domain="[('is_doctor', '=', True)]" context="{'default_is_doctor':True, 'default_is_company':False}"/>
+                            </group>
+                            <group>
+                                <field name="appointment_date"/>
+                                <field name="duration"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Notes">
+                                <field name="notes"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_medical_appointment_tree" model="ir.ui.view">
+            <field name="name">medical.appointment.tree</field>
+            <field name="model">medical.appointment</field>
+            <field name="arch" type="xml">
+                <tree string="Medical Appointments" decoration-info="state=='draft'" decoration-success="state=='done'" decoration-warning="state=='confirmed'" decoration-danger="state=='cancelled'">
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="appointment_date"/>
+                    <field name="duration"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_medical_appointment_calendar" model="ir.ui.view">
+            <field name="name">medical.appointment.calendar</field>
+            <field name="model">medical.appointment</field>
+            <field name="arch" type="xml">
+                <calendar string="Appointments" date_start="appointment_date" date_delay="duration" color="doctor_id" mode="month" event_limit="5"> <!-- Added event_limit -->
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                </calendar>
+            </field>
+        </record>
+
+        <record id="action_medical_appointment" model="ir.actions.act_window">
+            <field name="name">Medical Appointments</field>
+            <field name="res_model">medical.appointment</field>
+            <field name="view_mode">tree,form,calendar</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new appointment.
+              </p>
+            </field>
+        </record>
+
+        <!-- Menu Items -->
+        <menuitem id="menu_medical_root" name="Medical Center" sequence="10"/>
+
+        <menuitem id="menu_medical_appointments_main" name="Appointments" parent="menu_medical_root" sequence="10"/>
+        <menuitem id="menu_medical_appointment_all" name="All Appointments" parent="menu_medical_appointments_main" action="action_medical_appointment" sequence="10"/>
+
+        <menuitem id="menu_medical_patients_main" name="Patients" parent="menu_medical_root" sequence="20"/>
+        <menuitem id="menu_medical_patient" name="Patients" parent="menu_medical_patients_main" action="action_medical_patient" sequence="10"/>
+
+        <menuitem id="menu_medical_doctors_main" name="Doctors" parent="menu_medical_root" sequence="30"/>
+        <menuitem id="menu_medical_doctor" name="Doctors" parent="menu_medical_doctors_main" action="action_medical_doctor" sequence="10"/>
+
+        <menuitem id="menu_medical_configuration" name="Configuration" parent="menu_medical_root" sequence="100"/>
+        <menuitem id="menu_medical_specialty" name="Specialties" parent="menu_medical_configuration" action="action_medical_specialty" sequence="10"/>
+
+    </data>
+</odoo>

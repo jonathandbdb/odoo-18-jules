@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Doctor Schedule Views -->
+        <record id="view_medical_doctor_schedule_form" model="ir.ui.view">
+            <field name="name">medical.doctor.schedule.form</field>
+            <field name="model">medical.doctor.schedule</field>
+            <field name="arch" type="xml">
+                <form string="Doctor Schedule">
+                    <sheet>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="doctor_id" options="{'no_create_edit': True}"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Working Hours">
+                                <field name="attendance_ids" context="{'default_doctor_schedule_id': active_id, 'default_company_id': company_id}">
+                                    <tree string="Working Hours" editable="bottom">
+                                        <field name="name" required="1"/>
+                                        <field name="dayofweek" required="1"/>
+                                        <field name="hour_from" widget="float_time" required="1"/>
+                                        <field name="hour_to" widget="float_time" required="1"/>
+                                        <field name="date_from" invisible="1"/> <!-- These might not be needed if schedule has global from/to -->
+                                        <field name="date_to" invisible="1"/>
+                                        <field name="company_id" invisible="1"/> <!-- Set from parent -->
+                                        <field name="doctor_schedule_id" invisible="1"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_medical_doctor_schedule_tree" model="ir.ui.view">
+            <field name="name">medical.doctor.schedule.tree</field>
+            <field name="model">medical.doctor.schedule</field>
+            <field name="arch" type="xml">
+                <tree string="Doctor Schedules">
+                    <field name="name"/>
+                    <field name="doctor_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_medical_doctor_schedule" model="ir.actions.act_window">
+            <field name="name">Doctor Schedules</field>
+            <field name="res_model">medical.doctor.schedule</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Define a new working schedule for a doctor.
+              </p>
+            </field>
+        </record>
+
+        <!-- Doctor Schedule Exception Views -->
+        <record id="view_medical_doctor_schedule_exception_form" model="ir.ui.view">
+            <field name="name">medical.doctor.schedule.exception.form</field>
+            <field name="model">medical.doctor.schedule.exception</field>
+            <field name="arch" type="xml">
+                <form string="Doctor Schedule Exception">
+                    <sheet>
+                         <div class="oe_button_box" name="button_box">
+                            <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                                <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                            </button>
+                        </div>
+                        <group>
+                           <group>
+                                <field name="name"/>
+                                <field name="doctor_id" options="{'no_create_edit': True}"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                           </group>
+                           <group>
+                                <field name="date_from"/>
+                                <field name="date_to"/>
+                           </group>
+                        </group>
+                        <group>
+                            <field name="reason"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_medical_doctor_schedule_exception_tree" model="ir.ui.view">
+            <field name="name">medical.doctor.schedule.exception.tree</field>
+            <field name="model">medical.doctor.schedule.exception</field>
+            <field name="arch" type="xml">
+                <tree string="Doctor Schedule Exceptions">
+                    <field name="name"/>
+                    <field name="doctor_id"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                    <field name="reason" optional="hide"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                    <field name="active" widget="boolean_toggle"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="action_medical_doctor_schedule_exception" model="ir.actions.act_window">
+            <field name="name">Schedule Exceptions</field>
+            <field name="res_model">medical.doctor.schedule.exception</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_smiling_face">
+                Create a new schedule exception (e.g., holiday, time off).
+              </p>
+            </field>
+        </record>
+
+        <!-- Menu Items for Schedule Management -->
+        <menuitem id="menu_medical_schedule_main" name="Schedules" parent="medical_appointment.menu_medical_root" sequence="40"/>
+        <menuitem id="menu_item_doctor_schedule" name="Doctor Schedules" parent="menu_medical_schedule_main" action="action_medical_doctor_schedule" sequence="10"/>
+        <menuitem id="menu_item_doctor_schedule_exception" name="Schedule Exceptions" parent="menu_medical_schedule_main" action="action_medical_doctor_schedule_exception" sequence="20"/>
+    </data>
+</odoo>
