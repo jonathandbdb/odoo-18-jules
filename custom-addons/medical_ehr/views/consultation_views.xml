@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Medical Consultation Form View -->
+        <record id="view_medical_consultation_form" model="ir.ui.view">
+            <field name="name">medical.consultation.form</field>
+            <field name="model">medical.consultation</field>
+            <field name="arch" type="xml">
+                <form string="Medical Consultation">
+                    <header>
+                        <button name="action_create_prescription" string="Create Prescription" type="object" class="oe_highlight"
+                                attrs="{'invisible': [('active','=',False)]}"/>
+                        <!-- Add other state buttons if a workflow is introduced -->
+                         <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive" attrs="{'invisible':[('active','=',False)]}">
+                             <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                         </button>
+                         <button name="toggle_active" type="object" string="Reactivate" class="oe_link" icon="fa-undo" attrs="{'invisible':[('active','=',True)]}"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="patient_id" options="{'no_create_edit': True}"/>
+                                <field name="doctor_id" options="{'no_create_edit': True}"/>
+                                <field name="company_id" groups="base.group_multi_company"/>
+                            </group>
+                            <group>
+                                <field name="consultation_date"/>
+                                <field name="appointment_id" options="{'no_create_edit': True}"
+                                       context="{'default_patient_id': patient_id, 'default_doctor_id': doctor_id}"
+                                       domain="[('patient_id','=',patient_id),('doctor_id','=',doctor_id),('state','!=','cancelled')]"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Clinical Information">
+                                <group>
+                                    <field name="symptoms" placeholder="Patient reported symptoms..."/>
+                                    <field name="findings" placeholder="Doctor's clinical findings..."/>
+                                    <field name="diagnosis" placeholder="Diagnosis or provisional diagnosis..."/>
+                                    <field name="treatment_plan" placeholder="Proposed treatment plan..."/>
+                                </group>
+                            </page>
+                            <page string="Prescriptions">
+                                <field name="prescription_ids" readonly="1">
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="prescription_date"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                                <button name="action_create_prescription" string="Issue New Prescription" type="object" class="oe_link"/>
+                            </page>
+                            <page string="Notes">
+                                <field name="notes" placeholder="Additional internal notes..."/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <!-- Medical Consultation Tree View -->
+        <record id="view_medical_consultation_tree" model="ir.ui.view">
+            <field name="name">medical.consultation.tree</field>
+            <field name="model">medical.consultation</field>
+            <field name="arch" type="xml">
+                <tree string="Medical Consultations" decoration-muted="active==False">
+                    <field name="name"/>
+                    <field name="consultation_date"/>
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="diagnosis" optional="hide"/>
+                    <field name="appointment_id" optional="show"/>
+                    <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                    <field name="active" widget="boolean_toggle" invisible="1"/> <!-- For quick archive/unarchive -->
+                </tree>
+            </field>
+        </record>
+
+        <!-- Medical Consultation Search View -->
+        <record id="view_medical_consultation_search" model="ir.ui.view">
+            <field name="name">medical.consultation.search</field>
+            <field name="model">medical.consultation</field>
+            <field name="arch" type="xml">
+                <search string="Search Consultations">
+                    <field name="name"/>
+                    <field name="patient_id"/>
+                    <field name="doctor_id"/>
+                    <field name="consultation_date"/>
+                    <field name="appointment_id"/>
+                    <field name="diagnosis" string="Diagnosis contains"/>
+                    <filter string="Inactive" name="inactive" domain="[('active','=',False)]"/>
+                    <group expand="0" string="Group By">
+                        <filter string="Patient" name="group_by_patient" context="{'group_by':'patient_id'}"/>
+                        <filter string="Doctor" name="group_by_doctor" context="{'group_by':'doctor_id'}"/>
+                        <filter string="Consultation Month" name="group_by_consultation_month" context="{'group_by':'consultation_date:month'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <!-- Action for Medical Consultations -->
+        <record id="action_medical_consultation" model="ir.actions.act_window">
+            <field name="name">Consultations</field>
+            <field name="res_model">medical.consultation</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_medical_consultation_search"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Record a new medical consultation.
+                </p><p>
+                    Consultations log symptoms, findings, diagnosis, and treatment plans.
+                    You can link them to appointments and issue prescriptions.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu item for Consultations under EHR -->
+        <menuitem
+            id="menu_medical_consultation"
+            name="Consultations"
+            parent="medical_ehr.menu_ehr_root"
+            action="action_medical_consultation"
+            sequence="10"
+            groups="medical_appointment.group_medical_user"/>
+
+    </data>
+</odoo>

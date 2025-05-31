@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Report Action for Prescription -->
+        <record id="action_report_medical_prescription" model="ir.actions.report">
+            <field name="name">Prescription</field>
+            <field name="model">medical.prescription</field>
+            <field name="report_type">qweb-pdf</field>
+            <!-- Fully qualified name: module_name.template_id -->
+            <field name="report_name">medical_ehr.report_medical_prescription_document</field>
+            <field name="report_file">medical_ehr.report_medical_prescription_document</field>
+            <field name="print_report_name">'Prescription - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="model_medical_prescription"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Example: EHR Summary Report Action (if a model and template were defined) -->
+        <!--
+        <record id="action_report_ehr_summary" model="ir.actions.report">
+            <field name="name">EHR Summary</field>
+            <field name="model">res.partner</field> <!- Or a specific EHR summary model ->
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">medical_ehr.report_ehr_summary_document</field>
+            <field name="report_file">medical_ehr.report_ehr_summary_document</field>
+            <field name="print_report_name">'EHR Summary - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="base.model_res_partner"/> <!- If report is on res.partner ->
+            <field name="binding_type">report</field>
+        </record>
+        -->
+
+        <!-- Menu items for reports (can also be placed in ehr_views.xml or a specific report menu) -->
+        <!--
+        <menuitem
+            id="menu_ehr_reports_main"
+            name="EHR Reports"
+            parent="medical_ehr.menu_ehr_root"
+            sequence="80"
+            groups="medical_appointment.group_medical_user"/>
+
+        <menuitem
+            id="menu_action_report_medical_prescription_list"
+            name="Prescription Print (from list)" <!- Example if you want it in menu too ->
+            parent="menu_ehr_reports_main"
+            action="action_report_medical_prescription"
+            sequence="10"/>
+        -->
+
+    </data>
+</odoo>

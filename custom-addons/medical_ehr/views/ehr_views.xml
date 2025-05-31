@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Main EHR Menu -->
+        <menuitem
+            id="menu_ehr_root"
+            name="Electronic Health Records"
+            parent="medical_appointment.menu_medical_root"
+            sequence="50"
+            groups="medical_appointment.group_medical_user"
+            web_icon="medical_ehr,static/description/icon.png"
+            />
+            <!-- web_icon assumes you have an icon.png in medical_ehr/static/description/ -->
+
+        <!-- Placeholder: EHR Dashboard/Overview (if any) -->
+        <!-- <menuitem
+            id="menu_ehr_dashboard"
+            name="EHR Dashboard"
+            parent="menu_ehr_root"
+            action="action_ehr_dashboard"
+            sequence="1"
+            groups="medical_appointment.group_medical_user"/> -->
+
+        <!-- Configuration Menu for EHR specific items -->
+        <menuitem
+            id="menu_ehr_configuration"
+            name="EHR Configuration"
+            parent="menu_ehr_root"
+            sequence="100"
+            groups="medical_appointment.group_medical_manager"/>
+
+        <!-- Examples of items that would go under EHR Configuration -->
+        <menuitem
+            id="menu_medical_allergy_type"
+            name="Allergy Types"
+            parent="menu_ehr_configuration"
+            action="action_medical_allergy_type_ehr"
+            sequence="10"/>
+
+        <menuitem
+            id="menu_medical_condition_code"
+            name="Condition Codes (e.g., ICD-10)"
+            parent="menu_ehr_configuration"
+            action="action_medical_condition_code_ehr"
+            sequence="20"/>
+
+        <menuitem
+            id="menu_medical_medication_route"
+            name="Medication Routes"
+            parent="menu_ehr_configuration"
+            action="action_medical_medication_route_ehr"
+            sequence="30"/>
+
+        <menuitem
+            id="menu_medical_medication_form"
+            name="Medication Forms"
+            parent="menu_ehr_configuration"
+            action="action_medical_medication_form_ehr"
+            sequence="40"/>
+
+        <!-- Sequences for EHR records -->
+         <record id="seq_medical_consultation" model="ir.sequence">
+            <field name="name">Medical Consultation Sequence</field>
+            <field name="code">medical.consultation</field>
+            <field name="prefix">CONS/</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+        <record id="seq_medical_prescription" model="ir.sequence">
+            <field name="name">Medical Prescription Sequence</field>
+            <field name="code">medical.prescription</field>
+            <field name="prefix">PRES/</field>
+            <field name="padding">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
+    </data>
+</odoo>

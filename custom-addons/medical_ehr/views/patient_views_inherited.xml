@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit Partner Form View to add EHR specific fields and pages -->
+        <record id="view_partner_form_ehr_inherited" model="ir.ui.view">
+            <field name="name">res.partner.form.ehr.inherited</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook" position="inside">
+                    <page string="EHR Information" name="ehr_info" attrs="{'invisible': [('is_patient', '=', False)]}">
+                        <group>
+                            <group string="Basic Medical Info">
+                                <field name="blood_type"/>
+                                <field name="has_ehr_data" invisible="1"/> <!-- Helper for other UI logic if needed -->
+                            </group>
+                            <group string="EHR Actions">
+                                 <button name="action_view_ehr_summary" type="object" string="View Full EHR" class="oe_link" icon="fa-id-card-o" attrs="{'invisible': [('has_ehr_data', '=', False)]}"/>
+                            </group>
+                        </group>
+                        <field name="ehr_notes" placeholder="General notes related to the patient's electronic health record..."/>
+
+                        <notebook>
+                            <page string="Consultations" name="ehr_consultations">
+                                <field name="consultation_ids" readonly="1"> <!-- Typically managed via Consultation views -->
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="consultation_date"/>
+                                        <field name="doctor_id"/>
+                                        <field name="diagnosis" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Prescriptions" name="ehr_prescriptions">
+                                 <field name="prescription_ids" readonly="1"> <!-- Typically managed via Prescription views -->
+                                    <tree>
+                                        <field name="name"/>
+                                        <field name="prescription_date"/>
+                                        <field name="doctor_id"/>
+                                        <field name="state"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Allergies" name="ehr_allergies">
+                                <field name="allergy_ids">
+                                    <tree editable="bottom">
+                                        <field name="allergy_type_id"/>
+                                        <field name="reaction"/>
+                                        <field name="criticality"/>
+                                        <field name="effective_date"/>
+                                        <field name="notes" optional="hide"/>
+                                        <field name="active" widget="boolean_toggle" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </page>
+                             <page string="Chronic Conditions" name="ehr_chronic_conditions">
+                                <field name="chronic_condition_ids">
+                                    <tree editable="bottom">
+                                        <field name="condition_id"/>
+                                        <field name="status"/>
+                                        <field name="onset_date"/>
+                                        <field name="effective_date" optional="hide"/>
+                                        <field name="notes" optional="hide"/>
+                                        <field name="active" widget="boolean_toggle" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Vaccinations" name="ehr_vaccinations">
+                                <field name="vaccination_ids">
+                                    <tree editable="bottom">
+                                        <field name="vaccine_product_id"/>
+                                        <field name="effective_date" string="Vaccination Date"/>
+                                        <field name="dose_number"/>
+                                        <field name="lot_number" optional="show"/>
+                                        <field name="administered_by_id" optional="show"/>
+                                        <field name="next_dose_due_date" optional="show"/>
+                                        <field name="active" widget="boolean_toggle" optional="hide"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </page>
+                </xpath>
+
+                <!-- Add EHR related smart buttons to the button box on res.partner form -->
+                <xpath expr="//div[hasclass('oe_button_box')]" name="button_box" position="inside">
+                    <button class="oe_stat_button" type="object" name="action_view_ehr_summary"
+                        attrs="{'invisible': [('is_patient', '=', False)]}" icon="fa-heartbeat">
+                        <div class="o_field_widget o_stat_info">
+                            <span class="o_stat_text">EHR</span>
+                        </div>
+                    </button>
+                     <button class="oe_stat_button" type="action" name="%(action_medical_consultation_patient)d"
+                        attrs="{'invisible': [('is_patient', '=', False)]}" icon="fa-stethoscope">
+                        <field string="Consultations" name="consultation_count" widget="statinfo"/>
+                    </button>
+                    <button class="oe_stat_button" type="action" name="%(action_medical_prescription_patient)d"
+                        attrs="{'invisible': [('is_patient', '=', False)]}" icon="fa-file-text-o">
+                        <field string="Prescriptions" name="prescription_count" widget="statinfo"/>
+                    </button>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Add computed fields for stat buttons to res.partner model via code (patient_ehr.py) -->
+        <!-- For example, consultation_count, prescription_count -->
+
+        <!-- Action to open consultations for a specific patient (used by stat button) -->
+        <record id="action_medical_consultation_patient" model="ir.actions.act_window">
+            <field name="name">Patient Consultations</field>
+            <field name="res_model">medical.consultation</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('patient_id', '=', active_id)]</field>
+            <field name="context">{'default_patient_id': active_id}</field>
+        </record>
+
+        <!-- Action to open prescriptions for a specific patient (used by stat button) -->
+        <record id="action_medical_prescription_patient" model="ir.actions.act_window">
+            <field name="name">Patient Prescriptions</field>
+            <field name="res_model">medical.prescription</field>
+            <field name="view_mode">tree,form</field>
+            <field name="domain">[('patient_id', '=', active_id)]</field>
+            <field name="context">{'default_patient_id': active_id}</field>
+        </record>
+
+    </data>
+</odoo>

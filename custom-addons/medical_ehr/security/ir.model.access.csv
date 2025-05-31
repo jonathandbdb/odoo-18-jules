@@ -1,0 +1,42 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+# Base EHR Access for Medical User (example for patient_ehr fields on res.partner)
+access_patient_ehr_user,access.patient.ehr.user,model_res_partner,medical_appointment.group_medical_user,1,1,0,0
+access_patient_ehr_manager,access.patient.ehr.manager,model_res_partner,medical_appointment.group_medical_manager,1,1,1,0
+
+# Consultation Access
+access_medical_consultation_user,medical.consultation.user,model_medical_consultation,medical_appointment.group_medical_user,1,1,1,0
+access_medical_consultation_manager,medical.consultation.manager,model_medical_consultation,medical_appointment.group_medical_manager,1,1,1,1
+
+# Prescription Access
+access_medical_prescription_user,medical.prescription.user,model_medical_prescription,medical_appointment.group_medical_user,1,1,1,0
+access_medical_prescription_manager,medical.prescription.manager,model_medical_prescription,medical_appointment.group_medical_manager,1,1,1,1
+access_medical_prescription_line_user,medical.prescription.line.user,model_medical_prescription_line,medical_appointment.group_medical_user,1,1,1,0
+access_medical_prescription_line_manager,medical.prescription.line.manager,model_medical_prescription_line,medical_appointment.group_medical_manager,1,1,1,1
+
+# Medical History (Allergies, Conditions, Vaccinations) - User can typically read all, create some, manager can do more
+access_medical_patient_allergy_user,medical.patient.allergy.user,model_medical_patient_allergy,medical_appointment.group_medical_user,1,1,1,0
+access_medical_patient_allergy_manager,medical.patient.allergy.manager,model_medical_patient_allergy,medical_appointment.group_medical_manager,1,1,1,1
+access_medical_allergy_type_user,medical.allergy.type.user,model_medical_allergy_type,medical_appointment.group_medical_user,1,0,0,0
+access_medical_allergy_type_manager,medical.allergy.type.manager,model_medical_allergy_type,medical_appointment.group_medical_manager,1,1,1,1
+
+access_medical_patient_chronic_condition_user,medical.patient.chronic.condition.user,model_medical_patient_chronic_condition,medical_appointment.group_medical_user,1,1,1,0
+access_medical_patient_chronic_condition_manager,medical.patient.chronic.condition.manager,model_medical_patient_chronic_condition,medical_appointment.group_medical_manager,1,1,1,1
+access_medical_condition_code_user,medical.condition.code.user,model_medical_condition_code,medical_appointment.group_medical_user,1,0,0,0
+access_medical_condition_code_manager,medical.condition.code.manager,model_medical_condition_code,medical_appointment.group_medical_manager,1,1,1,1
+
+access_medical_patient_vaccination_user,medical.patient.vaccination.user,model_medical_patient_vaccination,medical_appointment.group_medical_user,1,1,1,0
+access_medical_patient_vaccination_manager,medical.patient.vaccination.manager,model_medical_patient_vaccination,medical_appointment.group_medical_manager,1,1,1,1
+
+# Supporting models for prescriptions
+access_medical_medication_route_user,medical.medication.route.user,model_medical_medication_route,medical_appointment.group_medical_user,1,0,0,0
+access_medical_medication_route_manager,medical.medication.route.manager,model_medical_medication_route,medical_appointment.group_medical_manager,1,1,1,1
+access_medical_medication_form_user,medical.medication.form.user,model_medical_medication_form,medical_appointment.group_medical_user,1,0,0,0
+access_medical_medication_form_manager,medical.medication.form.manager,model_medical_medication_form,medical_appointment.group_medical_manager,1,1,1,1
+
+# Note: Access to product.product (for medications and vaccines) is typically handled by base Odoo groups (e.g., 'product.group_product_user').
+# Ensure these groups have read access if medical users need to select them.
+# Write access to product.product for medical users might be restricted to managers or specific pharmacy groups.
+# For fields like 'is_vaccine' and 'is_medicament' on res.partner, the model_res_partner lines above cover them.
+# If new specific EHR groups are created in medical_ehr_groups.xml, they should be used here instead of relying solely on medical_appointment groups.
+# For example, group_ehr_user, group_ehr_clinician, group_ehr_manager.
+# For now, using existing medical_appointment groups for simplicity.
