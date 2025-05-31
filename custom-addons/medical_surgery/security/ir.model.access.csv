@@ -1,0 +1,21 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+# Operating Room Access
+access_medical_operating_room_user,medical.operating.room.user,model_medical_operating_room,medical_appointment.group_medical_user,1,0,0,0
+access_medical_operating_room_manager,medical.operating.room.manager,model_medical_operating_room,medical_appointment.group_medical_manager,1,1,1,1
+
+# Equipment Type Access (Configuration)
+access_medical_equipment_type_user,medical.equipment.type.user,model_medical_equipment_type,medical_appointment.group_medical_user,1,0,0,0
+access_medical_equipment_type_manager,medical.equipment.type.manager,model_medical_equipment_type,medical_appointment.group_medical_manager,1,1,1,1
+
+# Surgical Team Role Access (Configuration)
+access_medical_surgical_team_role_user,medical.surgical.team.role.user,model_medical_surgical_team_role,medical_appointment.group_medical_user,1,0,0,0
+access_medical_surgical_team_role_manager,medical.surgical.team.role.manager,model_medical_surgical_team_role,medical_appointment.group_medical_manager,1,1,1,1
+
+# Surgery Access
+access_medical_surgery_user,medical.surgery.user,model_medical_surgery,medical_appointment.group_medical_user,1,1,1,0
+access_medical_surgery_manager,medical.surgery.manager,model_medical_surgery,medical_appointment.group_medical_manager,1,1,1,1
+
+# Surgical Team Member Access (lines on Surgery record)
+access_medical_surgery_team_member_user,medical.surgery.team.member.user,model_medical_surgery_team_member,medical_appointment.group_medical_user,1,1,1,0
+access_medical_surgery_team_member_manager,medical.surgery.team.member.manager,model_medical_surgery_team_member,medical_appointment.group_medical_manager,1,1,1,1

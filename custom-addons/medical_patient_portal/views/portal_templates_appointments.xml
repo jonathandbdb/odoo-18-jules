@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Template for listing medical appointments in the portal -->
+    <template id="portal_my_appointments_list" name="My Medical Appointments">
+        <t t-call="portal.portal_layout">
+            <!-- Breadcrumb -->
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+            <t t-call="portal.portal_searchbar_sortby_wdg">
+                <t t-set="title">Medical Appointments</t>
+            </t>
+            <t t-if="not appointments and not is_patient">
+                 <div class="alert alert-warning mt8" role="alert">
+                    It seems you are not registered as a patient in our system. Please contact administration if this is an error.
+                </div>
+            </t>
+            <t t-elif="not appointments">
+                <div class="alert alert-info mt8" role="alert">
+                    You currently have no medical appointments scheduled or recorded.
+                </div>
+            </t>
+
+            <t t-if="appointments and is_patient">
+                <div class="table-responsive">
+                    <table class="table table-hover o_portal_my_doc_table">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="text-center">Date</th>
+                                <th>Time</th>
+                                <th>Doctor</th>
+                                <th class="text-center">Duration (Hrs)</th>
+                                <th>Status</th>
+                                <th>Notes</th>
+                                <th/> <!-- For detail view button -->
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="appointments" t-as="appointment">
+                                <tr>
+                                    <td class="text-center">
+                                        <span t-field="appointment.appointment_date" t-options='{"widget": "date"}'/>
+                                    </td>
+                                    <td>
+                                        <span t-field="appointment.appointment_date" t-options='{"widget": "datetime", "format": "HH:mm"}'/>
+                                    </td>
+                                    <td>
+                                        <span t-if="appointment.doctor_id" t-field="appointment.doctor_id.name"/>
+                                        <span t-else="">N/A</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="appointment.duration"/>
+                                    </td>
+                                    <td>
+                                        <span t-if="appointment.state == 'draft'" class="badge bg-secondary">Draft</span>
+                                        <span t-if="appointment.state == 'confirmed'" class="badge bg-success">Confirmed</span>
+                                        <span t-if="appointment.state == 'done'" class="badge bg-info">Done</span>
+                                        <span t-if="appointment.state == 'cancelled'" class="badge bg-danger">Cancelled</span>
+                                    </td>
+                                    <td>
+                                        <span t-esc="(appointment.notes or '')[:50] + ('...' if appointment.notes and len(appointment.notes) > 50 else '')"/>
+                                    </td>
+                                    <td class="text-end">
+                                        <a t-if="appointment.id" t-attf-href="/my/medical/appointment/#{appointment.id}?{{ keep_query() }}" class="btn btn-sm btn-outline-primary">
+                                            Details <i class="fa fa-chevron-right"/>
+                                        </a>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+            <div t-if="pager" class="o_portal_pager text-center">
+                <t t-call="portal.pager"/>
+            </div>
+        </t>
+    </template>
+
+    <!-- Template for individual appointment detail (placeholder) -->
+    <!-- This template would be used by the /my/medical/appointment/<int:appointment_id> route -->
+    <template id="portal_appointment_detail_page" name="Appointment Detail">
+        <t t-call="portal.portal_layout">
+            <t t-set="medical_area" t-value="True"/> <!-- For sidebar active state -->
+            <t t-set="page_name" t-value="'appointment_detail'"/>
+
+            <!-- Breadcrumb specific to this page -->
+             <ol class="breadcrumb">
+                <t t-call="medical_patient_portal.portal_breadcrumb_medical_base"/>
+                <li class="breadcrumb-item">
+                    <a href="/my/medical/appointments">My Appointments</a>
+                </li>
+                <li class="breadcrumb-item active">
+                    <t t-esc="appointment.name or 'Appointment Details'"/>
+                </li>
+            </ol>
+
+            <div class="container mt-4" t-if="appointment">
+                <h2>Appointment Details</h2>
+                <div class="row">
+                    <div class="col-md-8">
+                        <table class="table">
+                            <tr><th>Reference:</th><td><span t-field="appointment.name"/></td></tr>
+                            <tr><th>Date &amp; Time:</th><td><span t-field="appointment.appointment_date" t-options='{"widget": "datetime"}'/></td></tr>
+                            <tr><th>Duration:</th><td><span t-field="appointment.duration"/> hours</td></tr>
+                            <tr><th>Doctor:</th><td><span t-field="appointment.doctor_id.name"/></td></tr>
+                            <tr><th>Patient:</th><td><span t-field="appointment.patient_id.name"/></td></tr>
+                            <tr>
+                                <th>Status:</th>
+                                <td>
+                                    <span t-if="appointment.state == 'draft'" class="badge bg-secondary">Draft</span>
+                                    <span t-if="appointment.state == 'confirmed'" class="badge bg-success">Confirmed</span>
+                                    <span t-if="appointment.state == 'done'" class="badge bg-info">Done</span>
+                                    <span t-if="appointment.state == 'cancelled'" class="badge bg-danger">Cancelled</span>
+                                </td>
+                            </tr>
+                            <tr t-if="appointment.notes"><th>Notes:</th><td><span t-field="appointment.notes" widget="text"/></td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-4">
+                        <!-- Placeholder for actions like "Reschedule" or "Cancel" if implemented -->
+                        <p><em>Actions related to this appointment could be placed here.</em></p>
+                        <!-- e.g., <button class="btn btn-primary">Request Reschedule</button> -->
+                    </div>
+                </div>
+                 <div class="mt-3">
+                    <a href="/my/medical/appointments" class="btn btn-secondary">
+                        <i class="fa fa-chevron-left"/> Back to Appointments
+                    </a>
+                </div>
+            </div>
+            <div class="container mt-4" t-else="">
+                <div class="alert alert-warning" role="alert">
+                    The requested appointment could not be found or you do not have access to it.
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>

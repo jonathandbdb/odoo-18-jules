@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- QWeb Template for Prescription Report -->
+        <template id="report_medical_prescription_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="doc"> <!-- docs is the recordset passed to the report -->
+                    <t t-call="web.external_layout"> <!-- Standard Odoo external layout with header/footer -->
+                        <div class="page">
+                            <h2>Prescription: <span t-field="doc.name"/></h2>
+
+                            <div class="row mt32 mb32">
+                                <div class="col-6">
+                                    <strong>Patient:</strong> <span t-field="doc.patient_id.name"/><br/>
+                                    <strong>Address:</strong>
+                                    <span t-if="doc.patient_id.street" t-field="doc.patient_id.street"/>,
+                                    <span t-if="doc.patient_id.city" t-field="doc.patient_id.city"/>,
+                                    <span t-if="doc.patient_id.zip" t-field="doc.patient_id.zip"/>,
+                                    <span t-if="doc.patient_id.country_id" t-field="doc.patient_id.country_id.name"/><br/>
+                                    <strong>Date of Birth:</strong> <span t-field="doc.patient_id.birthdate_date"/> (Age: <span t-esc="doc.patient_id.age"/>)
+                                </div>
+                                <div class="col-6 text-right">
+                                    <strong>Prescribing Doctor:</strong> <span t-field="doc.doctor_id.name"/><br/>
+                                    <span t-if="doc.doctor_id.user_id and doc.doctor_id.user_id.company_id.street"> <!-- Example: Doctor's clinic address -->
+                                        <span t-field="doc.doctor_id.user_id.company_id.street"/><br/>
+                                        <span t-if="doc.doctor_id.user_id.company_id.city" t-field="doc.doctor_id.user_id.company_id.city"/>,
+                                        <span t-if="doc.doctor_id.user_id.company_id.zip" t-field="doc.doctor_id.user_id.company_id.zip"/>
+                                    </span>
+                                    <br/>
+                                    <strong>Prescription Date:</strong> <span t-field="doc.prescription_date" t-options='{"widget": "date"}'/><br/>
+                                    <t t-if="doc.consultation_id">
+                                        <strong>Consultation:</strong> <span t-field="doc.consultation_id.name"/>
+                                    </t>
+                                </div>
+                            </div>
+
+                            <h4>Medications Prescribed:</h4>
+                            <table class="table table-sm table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Medication</th>
+                                        <th>Dosage</th>
+                                        <th>Form</th>
+                                        <th>Route</th>
+                                        <th>Frequency</th>
+                                        <th>Duration</th>
+                                        <th>Quantity</th>
+                                        <th>Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="doc.prescription_line_ids" t-as="line">
+                                        <tr>
+                                            <td><span t-field="line.medication_id.name"/></td>
+                                            <td><span t-field="line.dosage"/></td>
+                                            <td><span t-field="line.form_id.name"/></td>
+                                            <td><span t-field="line.route_id.name"/></td>
+                                            <td><span t-field="line.frequency"/></td>
+                                            <td><span t-field="line.duration"/></td>
+                                            <td><span t-field="line.quantity"/></td>
+                                            <td><span t-field="line.notes"/></td>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+
+                            <div class="row mt32">
+                                <div class="col-12">
+                                    <strong>General Notes:</strong><br/>
+                                    <p t-field="doc.notes"/>
+                                </div>
+                            </div>
+
+                            <div class="row mt64" style="page-break-inside: avoid;">
+                                 <div class="col-6">
+                                    <p>Doctor's Signature:</p>
+                                    <br/><br/>
+                                    <p>_________________________</p>
+                                    <p><span t-field="doc.doctor_id.name"/></p>
+                                </div>
+                                <div class="col-6 text-right">
+                                     <p>Date: <span t-field="doc.prescription_date" t-options='{"widget": "date"}'/></p>
+                                </div>
+                            </div>
+
+                            <!-- Footer can be part of web.external_layout or customized here -->
+                            <div class="oe_structure"/> <!-- Odoo standard hook for snippets -->
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

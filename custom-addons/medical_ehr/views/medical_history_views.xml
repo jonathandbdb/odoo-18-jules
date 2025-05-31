@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Views for Medical Allergy Types -->
+        <record id="view_medical_allergy_type_form_ehr" model="ir.ui.view">
+            <field name="name">medical.allergy.type.form.ehr</field>
+            <field name="model">medical.allergy.type</field>
+            <field name="arch" type="xml">
+                <form string="Allergy Type">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="category"/>
+                            <field name="description" nolabel="1" placeholder="Description of the allergy type..."/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_medical_allergy_type_tree_ehr" model="ir.ui.view">
+            <field name="name">medical.allergy.type.tree.ehr</field>
+            <field name="model">medical.allergy.type</field>
+            <field name="arch" type="xml">
+                <tree string="Allergy Types">
+                    <field name="name"/>
+                    <field name="category"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_medical_allergy_type_ehr" model="ir.actions.act_window">
+            <field name="name">Allergy Types</field>
+            <field name="res_model">medical.allergy.type</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!-- Menu item for Allergy Types is in ehr_views.xml under Configuration -->
+
+        <!-- Views for Medical Condition Codes (e.g., ICD-10) -->
+        <record id="view_medical_condition_code_form_ehr" model="ir.ui.view">
+            <field name="name">medical.condition.code.form.ehr</field>
+            <field name="model">medical.condition.code</field>
+            <field name="arch" type="xml">
+                <form string="Condition Code">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="system"/>
+                        </group>
+                        <field name="description" placeholder="Detailed description of the condition..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_medical_condition_code_tree_ehr" model="ir.ui.view">
+            <field name="name">medical.condition.code.tree.ehr</field>
+            <field name="model">medical.condition.code</field>
+            <field name="arch" type="xml">
+                <tree string="Condition Codes">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="system"/>
+                </tree>
+            </field>
+        </record>
+         <record id="view_medical_condition_code_search_ehr" model="ir.ui.view">
+            <field name="name">medical.condition.code.search.ehr</field>
+            <field name="model">medical.condition.code</field>
+            <field name="arch" type="xml">
+                <search string="Search Condition Codes">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="system"/>
+                    <filter string="ICD-10" name="icd10" domain="[('system','=','ICD-10')]"/>
+                    <filter string="SNOMED-CT" name="snomed" domain="[('system','=','SNOMED-CT')]"/>
+                </search>
+            </field>
+        </record>
+        <record id="action_medical_condition_code_ehr" model="ir.actions.act_window">
+            <field name="name">Condition Codes</field>
+            <field name="res_model">medical.condition.code</field>
+            <field name="view_mode">tree,form</field>
+            <field name="search_view_id" ref="view_medical_condition_code_search_ehr"/>
+        </record>
+        <!-- Menu item for Condition Codes is in ehr_views.xml under Configuration -->
+
+        <!-- Views for Medication Routes -->
+        <record id="view_medical_medication_route_form_ehr" model="ir.ui.view">
+            <field name="name">medical.medication.route.form.ehr</field>
+            <field name="model">medical.medication.route</field>
+            <field name="arch" type="xml">
+                <form string="Medication Route">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <field name="description" placeholder="Description of the route..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_medical_medication_route_tree_ehr" model="ir.ui.view">
+            <field name="name">medical.medication.route.tree.ehr</field>
+            <field name="model">medical.medication.route</field>
+            <field name="arch" type="xml">
+                <tree string="Medication Routes">
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_medical_medication_route_ehr" model="ir.actions.act_window">
+            <field name="name">Medication Routes</field>
+            <field name="res_model">medical.medication.route</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!-- Menu item for Medication Routes is in ehr_views.xml under Configuration -->
+
+        <!-- Views for Medication Forms -->
+        <record id="view_medical_medication_form_form_ehr" model="ir.ui.view">
+            <field name="name">medical.medication.form.form.ehr</field>
+            <field name="model">medical.medication.form</field>
+            <field name="arch" type="xml">
+                <form string="Medication Form">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                        <field name="description" placeholder="Description of the form..."/>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_medical_medication_form_tree_ehr" model="ir.ui.view">
+            <field name="name">medical.medication.form.tree.ehr</field>
+            <field name="model">medical.medication.form</field>
+            <field name="arch" type="xml">
+                <tree string="Medication Forms">
+                    <field name="name"/>
+                    <field name="code"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_medical_medication_form_ehr" model="ir.actions.act_window">
+            <field name="name">Medication Forms</field>
+            <field name="res_model">medical.medication.form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <!-- Menu item for Medication Forms is in ehr_views.xml under Configuration -->
+
+        <!-- Direct Menu items for Patient-specific history (alternative to patient form tabs) -->
+        <!-- Example: All Patient Allergies -->
+        <record id="action_medical_patient_allergy_all" model="ir.actions.act_window">
+            <field name="name">Patient Allergies</field>
+            <field name="res_model">medical.patient.allergy</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Record a new patient allergy.
+                </p>
+            </field>
+        </record>
+         <menuitem
+            id="menu_medical_patient_allergy_all"
+            name="Allergies (All Patients)"
+            parent="medical_ehr.menu_ehr_root"
+            action="action_medical_patient_allergy_all"
+            sequence="30"
+            groups="medical_appointment.group_medical_user"/>
+
+        <!-- Example: All Patient Chronic Conditions -->
+        <record id="action_medical_patient_chronic_condition_all" model="ir.actions.act_window">
+            <field name="name">Patient Chronic Conditions</field>
+            <field name="res_model">medical.patient.chronic.condition</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+             <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Record a new patient chronic condition.
+                </p>
+            </field>
+        </record>
+        <menuitem
+            id="menu_medical_patient_chronic_condition_all"
+            name="Chronic Conditions (All Patients)"
+            parent="medical_ehr.menu_ehr_root"
+            action="action_medical_patient_chronic_condition_all"
+            sequence="40"
+            groups="medical_appointment.group_medical_user"/>
+
+        <!-- Example: All Patient Vaccinations -->
+        <record id="action_medical_patient_vaccination_all" model="ir.actions.act_window">
+            <field name="name">Patient Vaccinations</field>
+            <field name="res_model">medical.patient.vaccination</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{}</field>
+             <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Record a new patient vaccination.
+                </p>
+            </field>
+        </record>
+         <menuitem
+            id="menu_medical_patient_vaccination_all"
+            name="Vaccinations (All Patients)"
+            parent="medical_ehr.menu_ehr_root"
+            action="action_medical_patient_vaccination_all"
+            sequence="50"
+            groups="medical_appointment.group_medical_user"/>
+
+    </data>
+</odoo>

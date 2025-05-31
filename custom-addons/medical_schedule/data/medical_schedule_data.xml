@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Example: Default Holiday Type for Exceptions (if you add such a field) -->
+        <!-- <record id="exception_type_holiday" model="medical.schedule.exception.type">
+            <field name="name">Public Holiday</field>
+            <field name="is_work_interruption">True</field>
+        </record>
+        <record id="exception_type_training" model="medical.schedule.exception.type">
+            <field name="name">Training</field>
+            <field name="is_work_interruption">True</field>
+        </record> -->
+    </data>
+</odoo>

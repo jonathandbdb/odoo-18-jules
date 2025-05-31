@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_medical_doctor_schedule_user,medical.doctor.schedule.user,model_medical_doctor_schedule,base.group_user,1,1,1,1
+access_medical_doctor_schedule_manager,medical.doctor.schedule.manager,model_medical_doctor_schedule,medical_appointment.group_medical_manager,1,1,1,1
+access_medical_doctor_schedule_exception_user,medical.doctor.schedule.exception.user,model_medical_doctor_schedule_exception,base.group_user,1,1,1,1
+access_medical_doctor_schedule_exception_manager,medical.doctor.schedule.exception.manager,model_medical_doctor_schedule_exception,medical_appointment.group_medical_manager,1,1,1,1

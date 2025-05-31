@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0"> <!-- noupdate="1" if groups are not meant to be modified after init -->
+
+        <!-- Example: Define more granular EHR roles if needed -->
+        <!-- These could inherit from medical_appointment groups -->
+
+        <!-- <record id="group_ehr_readonly" model="res.groups">
+            <field name="name">EHR / Read-Only Access</field>
+            <field name="category_id" ref="medical_appointment.base.module_category_services_medical"/>
+            <field name="implied_ids" eval="[(4, ref('medical_appointment.group_medical_user'))]"/>
+            <field name="comment">Read-only access to most EHR records.</field>
+        </record>
+
+        <record id="group_ehr_clinician" model="res.groups">
+            <field name="name">EHR / Clinician</field>
+            <field name="category_id" ref="medical_appointment.base.module_category_services_medical"/>
+            <field name="implied_ids" eval="[(4, ref('group_ehr_readonly'))]"/>
+            <field name="comment">Users who can create and update clinical records like consultations, history, prescriptions (usually doctors, nurses).</field>
+        </record>
+
+        <record id="group_ehr_manager" model="res.groups">
+            <field name="name">EHR / Manager</field>
+            <field name="category_id" ref="medical_appointment.base.module_category_services_medical"/>
+            <field name="implied_ids" eval="[(4, ref('group_ehr_clinician')), (4, ref('medical_appointment.group_medical_manager'))]"/>
+            <field name="comment">Full access to EHR configuration and all records, including deletion where appropriate.</field>
+        </record> -->
+
+        <!-- For now, this file can be minimal. Access rights in ir.model.access.csv
+             are currently using groups from medical_appointment module.
+             If more specific EHR roles are defined here, the CSV should be updated. -->
+
+        <!-- Add record rules here if needed, e.g., a doctor can only see their own patients' EHR,
+             or patients can only see parts of their own EHR via portal. -->
+
+    </data>
+</odoo>

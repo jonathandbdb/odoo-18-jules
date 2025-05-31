@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.module.category" id="base.module_category_services_medical">
+            <field name="name">Medical</field>
+            <field name="description">Helps you manage your medical center.</field>
+            <field name="sequence">25</field> <!-- Adjust sequence as needed -->
+        </record>
+    </data>
+</odoo>
